@@ -1,0 +1,23 @@
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json tests/**/*.ts"
+
+[toolchain]
+anchor_version = "0.30.1"
+
+[workspace]
+members = [
+    "programs/nvshu"
+]
+
+[programs.devnet]
+nvshu = "FuCn9zJcTa3Agq3vAVwknTiJR62Y66bDmPX4GhMMwNSo"
+
+[programs.localnet]
+nvshu = "FuCn9zJcTa3Agq3vAVwknTiJR62Y66bDmPX4GhMMwNSo"
+
+[programs.testnet]
+nvshu = "FuCn9zJcTa3Agq3vAVwknTiJR62Y66bDmPX4GhMMwNSo"

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>女书 · 链上婚姻合约</title>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@project-serum/anchor@latest/dist/browser/index.js"></script>
+  <style>
+    body { font-family: "楷体","KaiTi","微软雅黑",sans-serif; background: #fdf6f0; color: #5d4037; margin:0; padding:20px; }
+    h1 { text-align: center; font-size: 3em; margin:0; color: #c2185b; }
+    .container { max-width: 800px; margin:0 auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .title { text-align: center; font-size: 1.2em; margin:10px 0 30px; color: #ad1457; }
+    button { background: #c2185b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1em; margin: 5px; }
+    button:hover { background: #ad1457; }
+    input, textarea { width: 100%; padding: 8px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em; box-sizing: border-box; }
+    label { font-weight: bold; }
+    .section { margin: 20px 0; padding: 20px; background: #fff5f7; border-radius: 10px; }
+    .contract-card { background: white; border: 1px solid #f48fb1; border-radius: 10px; padding: 15px; margin: 10px 0; }
+    hr { border: 0; border-top: 1px solid #f48fb1; margin: 30px 0; }
+    .info { font-size: 0.9em; color: #888; }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; background: #fce4ec; color: #c2185b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📜 女书</h1>
+    <div class="title">链上婚姻与互助协议</div>
+
+    <div id="walletBox" class="section">
+      <button id="createWalletBtn">✨ 生成演示钱包</button>
+      <button id="connectWalletBtn" style="display:none;">🔑 使用已有密钥</button>
+      <span id="walletStatus" style="margin-left:10px">未连接</span>
+      <br><br>
+      <div id="balanceInfo"></div>
+    </div>
+
+    <div class="section">
+      <h2>✍️ 创建新合约</h2>
+      <label>参与者地址（每行一个）</label>
+      <textarea id="createAddresses" rows="3" placeholder="每行输入一个 Solana 公钥（默认第一行为你的钱包地址）"></textarea>
+      <label>参与者性别（每行一个人：Female/Male/Other）</label>
+      <textarea id="createGenders" rows="3" placeholder="每行输入 Female、Male 或 Other"></textarea>
+      <label>合约内容</label>
+      <input type="text" id="createText" placeholder="例如：我们互相守护，约定未来三年共同居住">
+      <label>有效期（天，0 表示永久）</label>
+      <input type="number" id="createDuration" value="365">
+      <button id="createBtn">创建合约</button>
+      <div id="createResult"></div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <h2>🖊️ 签署合约</h2>
+      <label>合约地址（Public Key）</label>
+      <input type="text" id="signContractAddr" placeholder="输入已有合约的公钥地址">
+      <button id="signBtn">签署这份合约</button>
+      <div id="signResult"></div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <h2>🔍 查询合约</h2>
+      <label>合约地址</label>
+      <input type="text" id="queryContractAddr" placeholder="输入合约公钥地址">
+      <button id="queryBtn">查询合约详情</button>
+      <div id="queryResult"></div>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ 部署后替换为你的真实 Program ID
+    const PROGRAM_ID = new solanaWeb3.PublicKey("FuCn9zJcTa3Agq3vAVwknTiJR62Y66bDmPX4GhMMwNSo");
+
+    // IDL – 从 Playground 下载的 idl.json 内容直接粘贴在这里（或自动嵌入）
+    const IDL = {"version": "0.1.0", "name": "nvshu", "instructions": [{"name": "createContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": true}, {"name": "creator", "isMut": true, "isSigner": true}, {"name": "systemProgram", "isMut": false, "isSigner": false}], "args": [{"name": "participantWallets", "type": {"vec": "publicKey"}}, {"name": "genders", "type": {"vec": {"defined": "Gender"}}}, {"name": "contractText", "type": "string"}, {"name": "durationDays", "type": "i64"}]}, {"name": "signContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": false}, {"name": "signer", "isMut": false, "isSigner": true}], "args": []}, {"name": "annulContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": false}, {"name": "authority", "isMut": false, "isSigner": true}], "args": []}], "accounts": [{"name": "MarriageContract", "type": {"kind": "struct", "fields": [{"name": "creator", "type": "publicKey"}, {"name": "participants", "type": {"vec": {"defined": "Participant"}}}, {"name": "contractText", "type": "string"}, {"name": "createdAt", "type": "i64"}, {"name": "expiresAt", "type": "i64"}, {"name": "status", "type": {"defined": "ContractStatus"}}]}}], "types": [{"name": "Participant", "type": {"kind": "struct", "fields": [{"name": "wallet", "type": "publicKey"}, {"name": "gender", "type": {"defined": "Gender"}}, {"name": "signed", "type": "bool"}]}}, {"name": "Gender", "type": {"kind": "enum", "variants": [{"name": "Female"}, {"name": "Male"}, {"name": "Other"}]}}, {"name": "ContractStatus", "type": {"kind": "enum", "variants": [{"name": "Pending"}, {"name": "Active"}, {"name": "Expired"}, {"name": "Annulled"}]}}], "errors": [{"code": 6000, "name": "NotAParticipant", "msg": "You are not a participant of this contract."}, {"code": 6001, "name": "AlreadySigned", "msg": "You have already signed this contract."}, {"code": 6002, "name": "NotActive", "msg": "Contract is not active."}]};  // 稍后会用实际 IDL 替换
+
+    let connection, provider, program, walletKeypair, walletPubkey;
+
+    // 初始化连接到本地测试网
+    connection = new solanaWeb3.Connection("http://localhost:8899", "confirmed");
+
+    // 创建演示钱包（自动生成密钥并空投 10 SOL）
+    document.getElementById('createWalletBtn').addEventListener('click', async () => {
+      walletKeypair = solanaWeb3.Keypair.generate();
+      walletPubkey = walletKeypair.publicKey;
+      document.getElementById('walletStatus').innerText = `已连接: ${walletPubkey.toString().slice(0, 8)}...`;
+
+      // 本地网空投 SOL
+      try {
+        const airdropSig = await connection.requestAirdrop(walletPubkey, 10_000_000_000); // 10 SOL
+        await connection.confirmTransaction(airdropSig);
+        updateBalance();
+      } catch (e) {
+        console.error("空投失败", e);
+      }
+
+      // 初始化 Anchor Provider（模拟钱包）
+      const wallet = {
+        publicKey: walletPubkey,
+        signTransaction: async (tx) => {
+          tx.partialSign(walletKeypair);
+          return tx;
+        },
+        signAllTransactions: async (txs) => {
+          return txs.map(tx => {
+            tx.partialSign(walletKeypair);
+            return tx;
+          });
+        },
+      };
+      provider = new anchor.AnchorProvider(connection, wallet, anchor.AnchorProvider.defaultOptions());
+      anchor.setProvider(provider);
+      program = new anchor.Program(IDL, PROGRAM_ID, provider);
+
+      // 自动填充参与者第一行为自己地址
+      document.getElementById('createAddresses').placeholder = walletPubkey.toString();
+    });
+
+    // 查询余额
+    async function updateBalance() {
+      if (!walletPubkey) return;
+      const bal = await connection.getBalance(walletPubkey);
+      document.getElementById('balanceInfo').innerHTML = `💰 余额: ${bal / 1e9} SOL`;
+    }
+
+    // 创建合约
+    document.getElementById('createBtn').addEventListener('click', async () => {
+      if (!program) return alert("请先生成演示钱包！");
+      const addrText = document.getElementById('createAddresses').value;
+      const addresses = addrText ? addrText.split('\n').filter(l => l.trim()) : [];
+      // 如果未填写，默认第一个参与者为钱包自己
+      if (addresses.length === 0) {
+        addresses.push(walletPubkey.toString());
+      }
+      const participants = addresses.map(a => new solanaWeb3.PublicKey(a.trim()));
+
+      const gendersRaw = document.getElementById('createGenders').value.trim().split('\n').filter(l => l.trim());
+      if (gendersRaw.length !== participants.length) return alert("性别行数与参与者人数不一致！");
+      const genders = gendersRaw.map(g => {
+        const gNorm = g.trim().toLowerCase();
+        if (gNorm === 'female') return { female: {} };
+        if (gNorm === 'male') return { male: {} };
+        return { other: {} };
+      });
+
+      const contractText = document.getElementById('createText').value || "我们的约定";
+      const durationDays = parseInt(document.getElementById('createDuration').value) || 0;
+
+      const contractKeypair = solanaWeb3.Keypair.generate();
+      try {
+        await program.methods.createContract(participants, genders, contractText, new anchor.BN(durationDays))
+          .accounts({
+            contract: contractKeypair.publicKey,
+            creator: walletPubkey,
+            systemProgram: solanaWeb3.SystemProgram.programId,
+          })
+          .signers([contractKeypair])
+          .rpc();
+        document.getElementById('createResult').innerHTML = `<p style="color:green">✅ 合约已创建！<br>地址: <strong>${contractKeypair.publicKey.toString()}</strong></p>`;
+        updateBalance();
+      } catch(e) {
+        document.getElementById('createResult').innerHTML = `<p style="color:red">❌ 错误: ${e.message}</p>`;
+        console.error(e);
+      }
+    });
+
+    // 签署合约
+    document.getElementById('signBtn').addEventListener('click', async () => {
+      if (!program) return alert("请先生成演示钱包！");
+      const addr = document.getElementById('signContractAddr').value;
+      try {
+        await program.methods.signContract()
+          .accounts({ contract: new solanaWeb3.PublicKey(addr), signer: walletPubkey })
+          .rpc();
+        document.getElementById('signResult').innerHTML = `<p style="color:green">✅ 签署成功！</p>`;
+      } catch(e) {
+        document.getElementById('signResult').innerHTML = `<p style="color:red">❌ 错误: ${e.message}</p>`;
+        console.error(e);
+      }
+    });
+
+    // 查询合约
+    document.getElementById('queryBtn').addEventListener('click', async () => {
+      if (!program) return alert("请先生成演示钱包！");
+      const addr = document.getElementById('queryContractAddr').value;
+      try {
+        const contract = await program.account.marriageContract.fetch(new solanaWeb3.PublicKey(addr));
+        let html = `<div class="contract-card">`;
+        html += `<p><strong>发起人:</strong> ${contract.creator.toString()}</p>`;
+        html += `<p><strong>合约文本:</strong> ${contract.contractText}</p>`;
+        const createdAt = new Date(contract.createdAt.toNumber() * 1000).toLocaleString();
+        html += `<p><strong>创建时间:</strong> ${createdAt}</p>`;
+        const expires = contract.expiresAt.toNumber();
+        html += `<p><strong>过期时间:</strong> ${expires === 0 ? '永久' : new Date(expires * 1000).toLocaleString()}</p>`;
+        html += `<p><strong>状态:</strong> <span class="status-badge">${Object.keys(contract.status)[0]}</span></p>`;
+        html += `<p><strong>参与者:</strong></p><ul>`;
+        contract.participants.forEach(p => {
+          const genderStr = Object.keys(p.gender)[0] || '未知';
+          html += `<li>${p.wallet.toString()} - ${genderStr} - ${p.signed ? '已签' : '未签'}</li>`;
+        });
+        html += `</ul></div>`;
+        document.getElementById('queryResult').innerHTML = html;
+      } catch(e) {
+        document.getElementById('queryResult').innerHTML = `<p style="color:red">❌ 合约不存在或读取失败</p>`;
+        console.error(e);
+      }
+    });
+
+    // 嵌入 IDL（自动替换）
+    // IDL 内容由外部嵌入，这一步在生成时用 Python 脚本完成
+  </script>
+</body>
+</html>
