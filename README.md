@@ -64,24 +64,60 @@
 
 ---
 
-## 🚀 本地运行
+## 🚀  如何使用
+
+### 🌐 线上直接使用（推荐）
+
+项目已部署到 Solana Devnet，打开链接即可使用：
+
+👉 **[立即体验线上版](https://serenjing23-prog.github.io/nvshu/nvshu.html)**
+
+1. 点击 **“连接浏览器钱包”**（支持 Phantom、Backpack、Solflare 等）
+2. 确保钱包网络切换到 **Devnet**
+3. 如果钱包没有测试币，去 [solfaucet.com](https://solfaucet.com) 免费领取
+4. 选择协议类型 → 添加参与者 → 填写内容 → 创建合约
+5. 签署合约、查询链上数据，所有操作公开透明
+
+---
+
+### 🧪 本地开发/测试
+
+如果你想在本地测试网上运行，支持自动生成测试钱包和多人签署演示：
 
 **1. 克隆仓库**
+
 git clone https://github.com/serenjing23-prog/nvshu.git
+
 cd nvshu
 
 **2. 启动本地 Solana 测试网（新终端，保持运行）**
+
 solana-test-validator
 
 **3. 部署合约（新终端）**
+
 solana config set --url localhost
+
 solana program deploy target/deploy/nvshu.so
 
 **4. 启动前端服务器**
+
 python3 -m http.server 8080
 
-**5. 打开浏览器**
-访问 http://localhost:8080/nvshu.html
+**5.  打开本地测试版页面**
+
+http://localhost:8080/nvshu_local.html
+
+> 💡 本地测试版保留了“生成两个测试钱包”功能，可完整演示多人签署流程。
+
+---
+
+## 📂 版本说明
+
+| 文件 | 用途 | 打开方式 |
+|:---|:---|:---|
+| `nvshu.html` | 公开版（连接 Devnet） | 线上直接打开 |
+| `nvshu_local.html` | 本地测试版（连接 localhost） | 需启动本地测试网 |
 
 ---
 
