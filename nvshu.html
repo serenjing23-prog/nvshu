@@ -18,6 +18,22 @@ if (typeof Buffer === 'undefined') {
 </script>
 
 <script>
+// Buffer polyfill for browser
+if (typeof Buffer === 'undefined') {
+  class Buffer {
+    static from(arr) {
+      if (typeof arr === 'string') {
+        return new TextEncoder().encode(arr);
+      }
+      if (arr instanceof Uint8Array) return arr;
+      return new Uint8Array(arr);
+    }
+  }
+  window.Buffer = Buffer;
+}
+</script>
+
+<script>
 // Buffer polyfill
 if (typeof Buffer === 'undefined') {
   class Buffer {
