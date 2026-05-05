@@ -397,7 +397,7 @@
     }
 
     function buildCreateInstruction(contractAccount, creator, participants, genders, text, duration) {
-      const buf = [0]; // instruction index 0
+      const buf = [244,48,244,178,216,88,122,52]; // 8-byte discriminator
       buf.push(participants.length & 0xff, (participants.length>>8)&0xff, (participants.length>>16)&0xff, (participants.length>>24)&0xff);
       participants.forEach(p => { const b = p.toBytes(); for(let i=0;i<32;i++) buf.push(b[i]); });
       buf.push(participants.length & 0xff, (participants.length>>8)&0xff, (participants.length>>16)&0xff, (participants.length>>24)&0xff);
@@ -427,7 +427,7 @@
           {pubkey: signer, isSigner: true, isWritable: false}
         ],
         programId: PROGRAM_ID,
-        data: new Uint8Array([1])
+        data: new Uint8Array([145,83,234,177,104,87,183,156])
       });
     }
 
