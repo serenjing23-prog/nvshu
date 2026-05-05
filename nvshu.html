@@ -2,6 +2,22 @@
 <html lang="zh">
 <head>
 <script>
+// Buffer polyfill for browser
+if (typeof Buffer === 'undefined') {
+  class Buffer {
+    static from(arr) {
+      if (typeof arr === 'string') {
+        return new TextEncoder().encode(arr);
+      }
+      if (arr instanceof Uint8Array) return arr;
+      return new Uint8Array(arr);
+    }
+  }
+  window.Buffer = Buffer;
+}
+</script>
+
+<script>
 // Buffer polyfill
 if (typeof Buffer === 'undefined') {
   class Buffer {
@@ -27,6 +43,24 @@ if (typeof Buffer === 'undefined') {
     /* ----- 全局重置 & 字体 ----- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
+      font-family: "楷体", "KaiTi", "Noto Serif SC", "微软雅黑", sans-serif;
+      background-color: #faf5ef; 
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(245,225,220,0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(235,215,210,0.2) 0%, transparent 50%),
+        linear-gradient(45deg, rgba(230,210,200,0.08) 25%, transparent 25%, transparent 75%, rgba(230,210,200,0.08) 75%),
+        linear-gradient(45deg, rgba(230,210,200,0.08) 25%, transparent 25%, transparent 75%, rgba(230,210,200,0.08) 75%);
+      background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+      background-position: 0 0, 0 0, 0 0, 30px 30px;
+      background-attachment: fixed;
+      color: #4a3b3c; 
+      padding: 30px 20px;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    } 
       font-family: "楷体", "KaiTi", "Noto Serif SC", "微软雅黑", sans-serif;
       background-color: #faf5ef; 
       color: #4a3b3c; 
