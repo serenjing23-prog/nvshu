@@ -8,35 +8,38 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: "楷体","KaiTi","微软雅黑",sans-serif; 
+      font-family: "楷体","KaiTi","Noto Serif SC","微软雅黑",sans-serif;
       background: #faf5ef; 
       color: #4a3b3c; 
       padding: 30px 20px;
       display: flex; justify-content: center; 
+      min-height: 100vh;
     }
     .container { 
       max-width: 720px; width: 100%; 
-      background: rgba(255,255,255,0.9); 
-      border-radius: 32px; padding: 40px 32px; 
-      box-shadow: 0 8px 32px rgba(180,100,100,0.12); 
+      background: rgba(255,255,255,0.92); 
+      border-radius: 36px; padding: 40px 32px; 
+      box-shadow: 0 12px 40px rgba(180,100,100,0.15); 
     }
-    h1 { text-align: center; font-size: 2.6em; color: #b8404c; }
-    .title { text-align: center; color: #a05a60; margin-bottom: 36px; }
-    button { background: #b8404c; color: white; border: none; padding: 12px 24px; border-radius: 24px; cursor: pointer; font-size: 0.9em; margin: 5px; }
+    h1 { text-align: center; font-size: 2.8em; color: #b8404c; margin:0; }
+    .subtitle { text-align: center; color: #a05a60; margin-bottom: 36px; font-size: 1.1em; }
+    button { background: #b8404c; color: white; border: none; padding: 12px 28px; border-radius: 28px; cursor: pointer; font-size: 1em; margin: 8px 5px; }
     button:hover { background: #9c3540; }
-    input, textarea, select { width: 100%; padding: 12px 14px; margin: 6px 0 12px; border: 1px solid #e8d0d0; border-radius: 14px; background: #fefcfc; }
-    label { font-weight: bold; display: block; margin-top: 12px; }
-    .section { background: white; border-radius: 20px; padding: 24px; margin-bottom: 20px; }
-    .contract-card { background: white; border: 1px solid #f0e0e0; border-radius: 16px; padding: 20px; margin-top: 12px; }
-    .status-badge { background: #f8e8e8; color: #b8404c; padding: 6px 14px; border-radius: 20px; }
-    .hint { font-size: 0.85em; color: #888; }
+    input, textarea, select { width: 100%; padding: 12px 16px; margin: 6px 0 14px; border: 1px solid #e8d0d0; border-radius: 16px; background: #fefcfc; font-size: 0.95em; }
+    label { font-weight: bold; display: block; margin-top: 16px; color: #5d4037; }
+    .section { background: white; border-radius: 24px; padding: 24px; margin-bottom: 24px; border: 1px solid #f5e8e8; }
+    .hint { font-size: 0.88em; color: #888; margin-top: 6px; }
+    .contract-card { background: #fff; border: 1px solid #f0e0e0; border-radius: 20px; padding: 20px; margin-top: 14px; }
+    .status-badge { background: #f8e8e8; color: #b8404c; padding: 6px 16px; border-radius: 20px; display: inline-block; }
+    hr { border: 0; border-top: 1px solid #f0e0e0; margin: 24px 0; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>📜 女书</h1>
-    <div class="title">“婚姻”即议定协议 | 公开版</div>
+    <div class="subtitle">“婚姻”即议定协议 | 公开版</div>
 
+    <!-- 连接钱包 -->
     <div class="section">
       <h2>🔗 连接钱包</h2>
       <button id="connectBtn">👛 连接浏览器钱包</button>
@@ -44,6 +47,7 @@
       <p id="walletStatus" class="hint">未连接</p>
     </div>
 
+    <!-- 创建合约 -->
     <div class="section">
       <h2>✍️ 创建新合约</h2>
       <label>协议类型</label>
@@ -53,65 +57,76 @@
         <option value="养老互助协议">养老互助协议</option>
         <option value="自定义协议">自定义协议</option>
       </select>
-      <label>参与者地址 (每行一个)</label>
-      <textarea id="participants" rows="3" placeholder="公钥地址，留空则为自己"></textarea>
+      <label>参与者地址 (每行一个，留空则为自己)</label>
+      <textarea id="participants" rows="2" placeholder="钱包地址，留空则为自己"></textarea>
       <label>参与者性别 (每行对应: Female / Male / Other)</label>
-      <textarea id="genders" rows="3" placeholder="Female"></textarea>
+      <textarea id="genders" rows="2" placeholder="Female、Male 或 Other"></textarea>
       <label>开始日期 (可选)</label>
       <input type="date" id="startDate">
       <label>结束日期 (必填)</label>
       <input type="date" id="endDate">
+      <p id="dateHint" class="hint"></p>
       <label>合约内容</label>
       <input type="text" id="contractText" placeholder="例如：我指定对方为意定监护人...">
       <button id="createBtn">✨ 创建合约</button>
       <div id="createResult" class="hint"></div>
     </div>
 
+    <!-- 签署合约 -->
     <div class="section">
       <h2>🖊️ 签署合约</h2>
-      <input type="text" id="signAddr" placeholder="合约地址">
+      <input type="text" id="signAddr" placeholder="输入合约地址">
       <button id="signBtn">签署这份合约</button>
       <div id="signResult" class="hint"></div>
     </div>
 
+    <!-- 查询合约 -->
     <div class="section">
       <h2>🔍 查询合约</h2>
-      <input type="text" id="queryAddr" placeholder="合约地址">
+      <input type="text" id="queryAddr" placeholder="输入合约地址">
       <button id="queryBtn">查询详情</button>
       <div id="queryResult"></div>
     </div>
 
+    <!-- AI 法律顾问 -->
     <div class="section">
       <h2>🧠 AI 法律顾问</h2>
+      <label>法律管辖区</label>
       <select id="lawJurisdiction">
         <option value="china">中国民法</option>
         <option value="california">美国加州家庭法</option>
         <option value="europe">欧洲</option>
         <option value="custom">自定义</option>
       </select>
-      <textarea id="aiText" rows="3" placeholder="粘贴合约条款..."></textarea>
-      <input type="password" id="apiKey" placeholder="DeepSeek API Key">
+      <div id="customLawBox" style="display:none;">
+        <label>自定义法律背景</label>
+        <input type="text" id="customLawContext" placeholder="例如：伊斯兰教法...">
+      </div>
+      <label>合约条款</label>
+      <textarea id="aiText" rows="2" placeholder="粘贴合约条款..."></textarea>
+      <label>DeepSeek API Key</label>
+      <input type="password" id="apiKey" placeholder="sk-...">
       <button id="aiBtn">🔍 分析风险</button>
-      <div id="aiResult"></div>
+      <div id="aiResult" style="margin-top:12px;"></div>
     </div>
   </div>
 
   <script>
-    // ⚠️ 用你真实的 B 开头 Program ID 替换下面这行
-    const PROGRAM_ID = new solanaWeb3.PublicKey("YOUR_PROGRAM_ID");
+    // ⚠️ 这里必须替换成你链上真实的 Program ID (vvv final 项目的 ID)
+    const PROGRAM_ID = new solanaWeb3.PublicKey("YOUR_PROGRAM_ID_HERE");
     
     let connection = new solanaWeb3.Connection("https://api.devnet.solana.com", "confirmed");
-    let walletPublicKey, walletSigner;
+    let walletPublicKey = null, walletSigner = null;
 
     // Anchor 指令判别符
-    const DISCRIMINATORS = {
-        "create_contract": [171, 143, 141, 157, 62, 226, 23, 108],
-        "sign_contract": [140, 56, 178, 216, 89, 123, 211, 156]
+    const DISCRIMINATOR = {
+      create_contract: [171, 143, 141, 157, 62, 226, 23, 108],
+      sign_contract: [140, 56, 178, 216, 89, 123, 211, 156]
     };
 
-    // 连接钱包
+    // ---------- 钱包连接 ----------
     document.getElementById('connectBtn').addEventListener('click', async () => {
-      if (!window.solana) return alert('请安装 Phantom 等钱包');
+      if (!window.solana) return alert('请安装 Phantom 或其他 Solana 钱包');
       try {
         await window.solana.connect();
         walletPublicKey = window.solana.publicKey;
@@ -123,42 +138,46 @@
     });
 
     document.getElementById('disconnectBtn').addEventListener('click', () => {
-      window.solana.disconnect();
+      if (window.solana && window.solana.disconnect) window.solana.disconnect();
       walletPublicKey = null; walletSigner = null;
       document.getElementById('walletStatus').innerText = '未连接';
       document.getElementById('connectBtn').style.display = 'inline-block';
       document.getElementById('disconnectBtn').style.display = 'none';
     });
 
-    async function sendTransaction(instruction) {
+    // ---------- 通用发送交易 ----------
+    async function sendTransaction(instruction, extraSigners = []) {
+      if (!walletPublicKey) throw new Error('请先连接钱包');
       let tx = new solanaWeb3.Transaction().add(instruction);
       tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
       tx.feePayer = walletPublicKey;
+      extraSigners.forEach(s => tx.partialSign(s));
       const signed = await walletSigner.signTransaction(tx);
       let txid = await connection.sendRawTransaction(signed.serialize());
       await connection.confirmTransaction(txid);
       return txid;
     }
 
-    // 创建合约指令
+    // ---------- 创建合约指令 ----------
     function buildCreateIx(contractKP, participants, genders, text, days) {
-      let data = [...DISCRIMINATORS["create_contract"]];
+      let data = [...DISCRIMINATOR.create_contract];
       // Vec<Pubkey>
       let len = participants.length;
-      data.push((len & 0xff), (len>>8)&0xff, (len>>16)&0xff, (len>>24)&0xff);
+      data.push(len & 0xff, (len>>8)&0xff, (len>>16)&0xff, (len>>24)&0xff);
       participants.forEach(p => data.push(...p.toBytes()));
       // Vec<Gender>
       let gmap = { Female:0, Male:1, Other:2 };
-      data.push((len & 0xff), (len>>8)&0xff, (len>>16)&0xff, (len>>24)&0xff);
+      data.push(len & 0xff, (len>>8)&0xff, (len>>16)&0xff, (len>>24)&0xff);
       genders.forEach(g => data.push(gmap[Object.keys(g)[0]] ?? 2));
       // String
       let encoded = new TextEncoder().encode(text);
-      data.push((encoded.length & 0xff), (encoded.length>>8)&0xff, (encoded.length>>16)&0xff, (encoded.length>>24)&0xff);
+      data.push(encoded.length & 0xff, (encoded.length>>8)&0xff, (encoded.length>>16)&0xff, (encoded.length>>24)&0xff);
       data.push(...encoded);
-      // i64
+      // i64 duration
       let buf = new ArrayBuffer(8);
       new DataView(buf).setBigInt64(0, BigInt(days), true);
       data.push(...new Uint8Array(buf));
+
       return new solanaWeb3.TransactionInstruction({
         keys: [
           {pubkey: contractKP.publicKey, isSigner: true, isWritable: true},
@@ -170,7 +189,7 @@
       });
     }
 
-    // 签署合约指令
+    // ---------- 签署合约指令 ----------
     function buildSignIx(contractAddr) {
       return new solanaWeb3.TransactionInstruction({
         keys: [
@@ -178,17 +197,16 @@
           {pubkey: walletPublicKey, isSigner: true, isWritable: false}
         ],
         programId: PROGRAM_ID,
-        data: new Uint8Array(DISCRIMINATORS["sign_contract"])
+        data: new Uint8Array(DISCRIMINATOR.sign_contract)
       });
     }
 
-    // 创建合约按钮
+    // ---------- 创建按钮 ----------
     document.getElementById('createBtn').addEventListener('click', async () => {
       if (!walletPublicKey) return alert('请先连接钱包');
       let addrLines = document.getElementById('participants').value.split('\n').filter(l => l.trim());
       let genderLines = document.getElementById('genders').value.split('\n').filter(l => l.trim());
-      let participants = addrLines.map(a => new solanaWeb3.PublicKey(a.trim()));
-      if (participants.length === 0) participants = [walletPublicKey];
+      let participants = addrLines.length ? addrLines.map(a => new solanaWeb3.PublicKey(a.trim())) : [walletPublicKey];
       let genders = genderLines.map(g => {
         let v = g.trim().toLowerCase();
         return v === 'male' ? {Male:{}} : (v === 'female' ? {Female:{}} : {Other:{}});
@@ -198,34 +216,26 @@
       let startDate = document.getElementById('startDate').value ? new Date(document.getElementById('startDate').value) : new Date();
       let days = Math.round((endDate - startDate) / 86400000);
       if (days < 1) return alert('结束日期必须晚于开始日期');
-      let text = document.getElementById('contractText').value;
+      let text = document.getElementById('contractText').value || "自定义协议";
       let contractKP = solanaWeb3.Keypair.generate();
       try {
-        let ix = buildCreateIx(contractKP, participants, genders, text, days);
-        let tx = new solanaWeb3.Transaction().add(ix);
-        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-        tx.feePayer = walletPublicKey;
-        tx.partialSign(contractKP);
-        const signed = await walletSigner.signTransaction(tx);
-        let txid = await connection.sendRawTransaction(signed.serialize());
-        await connection.confirmTransaction(txid);
+        await sendTransaction(buildCreateIx(contractKP, participants, genders, text, days), [contractKP]);
         document.getElementById('createResult').innerHTML = `✅ 合约已创建！<br><strong>${contractKP.publicKey.toString()}</strong>`;
       } catch (e) { document.getElementById('createResult').innerHTML = `❌ ${e.message}`; }
     });
 
-    // 签署合约按钮
+    // ---------- 签署按钮 ----------
     document.getElementById('signBtn').addEventListener('click', async () => {
       if (!walletPublicKey) return alert('请先连接钱包');
       let addr = document.getElementById('signAddr').value.trim();
       if (!addr) return alert('请输入合约地址');
       try {
-        let ix = buildSignIx(addr);
-        await sendTransaction(ix);
+        await sendTransaction(buildSignIx(addr));
         document.getElementById('signResult').innerHTML = '✅ 签署成功';
       } catch (e) { document.getElementById('signResult').innerHTML = `❌ ${e.message}`; }
     });
 
-    // 查询合约按钮
+    // ---------- 查询按钮 ----------
     document.getElementById('queryBtn').addEventListener('click', async () => {
       let addr = document.getElementById('queryAddr').value.trim();
       if (!addr) return;
@@ -255,11 +265,12 @@
       } catch (e) { document.getElementById('queryResult').innerHTML = `❌ ${e.message}`; }
     });
 
-    // AI 分析按钮
+    // ---------- AI 分析 ----------
     document.getElementById('aiBtn').addEventListener('click', async () => {
       let apiKey = document.getElementById('apiKey').value.trim();
       if (!apiKey) return alert('请输入 DeepSeek API Key');
       let text = document.getElementById('aiText').value.trim();
+      if (!text) return alert('请输入合约条款');
       let resDiv = document.getElementById('aiResult');
       resDiv.innerHTML = '⏳ 分析中...';
       let j = document.getElementById('lawJurisdiction').value;
@@ -267,7 +278,11 @@
       if(j==='china') ctx = '你是一位精通中国民法典的AI法律顾问。';
       else if(j==='california') ctx = '你是一位精通美国加州家庭法的AI法律顾问。';
       else if(j==='europe') ctx = '你是一位精通欧洲人权公约的AI法律顾问。';
-      else if(j==='custom') ctx = document.getElementById('customLawContext')?.value?.trim() || ctx;
+      else if(j==='custom') {
+        let customCtx = document.getElementById('customLawContext')?.value?.trim();
+        if (!customCtx) return alert('请输入自定义法律背景');
+        ctx = customCtx;
+      }
       try {
         let resp = await fetch('https://api.deepseek.com/chat/completions', {
           method:'POST',
@@ -278,6 +293,21 @@
         let data = await resp.json();
         resDiv.innerHTML = `<div style="white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;">📋 ${data.choices[0].message.content.replace(/\n/g, '<br>')}</div>`;
       } catch (e) { resDiv.innerHTML = `❌ ${e.message}`; }
+    });
+
+    // 法律管辖区切换
+    document.getElementById('lawJurisdiction').addEventListener('change', function() {
+      document.getElementById('customLawBox').style.display = this.value === 'custom' ? 'block' : 'none';
+    });
+
+    // 日期提示
+    document.getElementById('endDate').addEventListener('change', function() {
+      let s = document.getElementById('startDate').value;
+      let e = this.value;
+      if (s && e) {
+        let days = Math.round((new Date(e+'T00:00:00Z') - new Date(s+'T00:00:00Z'))/86400000);
+        document.getElementById('dateHint').innerText = days > 0 ? `有效期约 ${days} 天` : '结束日期必须晚于开始日期';
+      }
     });
   </script>
 </body>
