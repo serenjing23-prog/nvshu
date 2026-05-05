@@ -30,13 +30,8 @@
     <!-- 钱包模块 -->
     <div id="walletBox" class="section">
       <h2>👛 钱包管理</h2>
-      <button id="createWalletsBtn">✨ 生成两个测试钱包</button>
       <button id="connectBrowserWalletBtn" style="display:none;">🔗 连接浏览器钱包</button>
       <button id="disconnectBrowserWalletBtn" style="display:none; background:#888;">断开钱包</button>
-      <div id="testWalletsContainer" style="display:none;">
-        <h3>🧪 测试钱包 (本地网络)</h3>
-        <div id="walletACard" class="wallet-card active-wallet">
-          <div><strong>发起人 (你)</strong><br><span id="walletAAddress" class="wallet-address"></span><br><span id="walletABalance">余额: -</span></div>
           <div><input type="radio" name="activeWallet" value="A" checked onchange="switchActiveWallet('A')"> 使用此钱包</div>
         </div>
         <div id="walletBCard" class="wallet-card">
@@ -212,20 +207,6 @@
     }
 
     // --- 钱包逻辑 ---
-    document.getElementById('createWalletsBtn').addEventListener('click', async () => {
-      testWalletA = solanaWeb3.Keypair.generate();
-      testWalletB = solanaWeb3.Keypair.generate();
-      for (let w of [testWalletA, testWalletB]) {
-        const sig = await connection.requestAirdrop(w.publicKey, 10_000_000_000);
-        await connection.confirmTransaction(sig);
-      }
-      document.getElementById('walletAAddress').innerText = testWalletA.publicKey.toString();
-      document.getElementById('walletBAddress').innerText = testWalletB.publicKey.toString();
-      updateTestBalances();
-      document.getElementById('testWalletsContainer').style.display = 'block';
-      setActiveWallet(testWalletA, testWalletA.publicKey, 'A');
-      document.querySelector('.participant-address').placeholder = testWalletA.publicKey.toString();
-    });
 
     document.getElementById('connectBrowserWalletBtn').addEventListener('click', async () => {
       const adapter = window.solana;
