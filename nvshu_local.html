@@ -297,22 +297,8 @@
     }
 
     function updateProvider() {
-      if (!activeSigner) return;
-      const wallet = {
-        publicKey: activePublicKey,
-        signTransaction: async (tx) => {
-          if (activeWalletType === 'browser') return await activeSigner.signTransaction(tx);
-          tx.partialSign(activeSigner);
-          return tx;
-        },
-        signAllTransactions: async (txs) => {
-          if (activeWalletType === 'browser') return await activeSigner.signAllTransactions(txs);
-          return txs.map(tx => { tx.partialSign(activeSigner); return tx; });
-        }
-      };
-      provider = new anchor.AnchorProvider(connection, wallet, {});
-      anchor.setProvider(provider);
-      program = new anchor.Program(IDL, PROGRAM_ID, provider);
+      // 不再使用 Anchor，仅保留钱包信息供手动交易使用
+      console.log('钱包已更新:', activePublicKey?.toString());
     }
 
     // IDL 将在外部嵌入
