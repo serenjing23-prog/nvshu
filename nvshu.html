@@ -447,6 +447,31 @@
     document.getElementById('lawJurisdiction').addEventListener('change', function() {
       document.getElementById('customLawBox').style.display = this.value==='custom' ? 'block' : 'none';
     });
-  </script>
+  
+    // 连接钱包（自动补全）
+    document.getElementById('connectBrowserWalletBtn').addEventListener('click', async () => {
+      if (!window.solana) { alert('请安装 Phantom 或其他 Solana 钱包'); return; }
+      try {
+        const resp = await window.solana.connect();
+        browserPublicKey = resp.publicKey;
+        browserSigner = window.solana;
+        activePublicKey = browserPublicKey; activeSigner = browserSigner; activeWalletType = 'browser';
+        document.getElementById('browserWalletAddress').innerText = browserPublicKey.toString();
+        document.getElementById('browserWalletContainer').style.display = 'block';
+        document.getElementById('connectBrowserWalletBtn').style.display = 'none';
+        document.getElementById('disconnectBrowserWalletBtn').style.display = 'inline-block';
+        document.getElementById('walletStatus').innerText = `已连接: ${browserPublicKey.toString().slice(0,8)}...`;
+      } catch(e) { alert('连接失败: ' + e.message); }
+    });
+    document.getElementById('disconnectBrowserWalletBtn').addEventListener('click', async () => {
+      if(browserSigner && browserSigner.disconnect) await browserSigner.disconnect();
+      browserSigner = null; browserPublicKey = null; activeSigner = null; activePublicKey = null;
+      document.getElementById('browserWalletContainer').style.display = 'none';
+      document.getElementById('connectBrowserWalletBtn').style.display = 'inline-block';
+      document.getElementById('disconnectBrowserWalletBtn').style.display = 'none';
+      document.getElementById('walletStatus').innerText = '未连接';
+    });
+
+</script>
 </body>
 </html>
