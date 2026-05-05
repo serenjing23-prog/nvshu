@@ -85,17 +85,23 @@
 如果你想在本地测试网上运行，支持自动生成测试钱包和多人签署演示：
 
 **1. 克隆仓库**
+
 git clone https://github.com/serenjing23-prog/nvshu.git
+
 cd nvshu
 
 **2. 启动本地 Solana 测试网（新终端，保持运行）**
+
 solana-test-validator
 
 **3. 部署合约（新终端）**
+
 solana config set --url localhost
+
 solana program deploy target/deploy/nvshu.so
 
 **4. 启动前端服务器**
+
 python3 -m http.server 8080
 
 **5.  打开本地测试版页面**
