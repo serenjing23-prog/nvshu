@@ -380,13 +380,15 @@
       const { blockhash } = await connection.getLatestBlockhash();
       tx.recentBlockhash = blockhash;
       tx.feePayer = activePublicKey;
+      // 先让额外密钥对（如合约账户）签名
       signers.forEach(signer => tx.partialSign(signer));
       if (activeWalletType === 'browser') {
         const signed = await activeSigner.signTransaction(tx);
         return await connection.sendRawTransaction(signed.serialize());
       } else {
-        tx.sign(...signers);
-        return await connection.sendRawTransaction(tx.serialize());
+        // 本地钱包：额外密钥对已部分签名，不再重复签名
+        const signed = await activeSigner.signTransaction(tx);
+        return await connection.sendRawTransaction(signed.serialize());
       }
     }
 
