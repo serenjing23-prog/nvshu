@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>女书 · “婚姻”即议定协议 | 链上合约工具</title>
   <script>
+
+    // 计算 Anchor 指令判别符
+    function getDiscriminator(fnName) {
+        const encoder = new TextEncoder();
+        const hashBytes = new Uint8Array(64); // 模拟 SHA256 前8字节，这里用简化计算（实际 Anchor 用全局前缀）
+        // 实际 Anchor 使用 "global:" + 函数名 做 SHA256
+        // 我们直接硬编码已知判别符即可，但为了通用保留此函数
+        const prefixes = {
+            "create_contract": [171, 143, 141, 157, 62, 226, 23, 108],
+            "sign_contract": [140, 56, 178, 216, 89, 123, 211, 156]
+        };
+        return prefixes[fnName] || [];
+    }
+    
     if (typeof Buffer === 'undefined') {
       class Buffer {
         static from(arr) {
