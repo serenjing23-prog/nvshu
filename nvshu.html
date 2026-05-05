@@ -316,10 +316,16 @@
     }
 
     // 构造签署合约指令
-    function buildSignInstruction(contract, signer) {
+        function buildSignInstruction(contract, signer) {
       return new solanaWeb3.TransactionInstruction({
         keys: [
           {pubkey: contract, isSigner: false, isWritable: true},
+          {pubkey: signer, isSigner: true, isWritable: false}
+        ],
+        programId: PROGRAM_ID,
+        data: new Uint8Array([145,83,234,177,104,87,183,156])
+      });
+    },
           {pubkey: signer, isSigner: true, isWritable: false}
         ],
         programId: PROGRAM_ID,
