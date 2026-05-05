@@ -278,16 +278,21 @@
     });
 
     async function sendTransaction(instruction, signers = []) {
-      if (!activePublicKey) throw new Error('钱包未连接');
-      let tx = new solanaWeb3.Transaction().add(instruction);
-      const { blockhash } = await connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
-      tx.feePayer = activePublicKey;
-      const signed = await activeSigner.signTransaction(tx);
-      const txid = await connection.sendRawTransaction(signed.serialize());
-      await connection.confirmTransaction(txid);
-      return txid;
-    }
+  if (!activePublicKey) throw new Error('钱包未连接');
+  let tx = new solanaWeb3.Transaction().add(instruction);
+  const { blockhash } = await connection.getLatestBlockhash();
+  tx.recentBlockhash = blockhash;
+  tx.feePayer = activePublicKey;
+
+  // 先让合约账户等额外密钥对签名
+  signers.forEach(signer => tx.partialSign(signer));
+
+  // 再让浏览器钱包签名
+  const signed = await activeSigner.signTransaction(tx);
+  const txid = await connection.sendRawTransaction(signed.serialize());
+  await connection.confirmTransaction(txid);
+  return txid;
+}
 
     function buildCreateInstruction(contractAccount, creator, participants, genders, text, duration) {
       const buf = [0];
