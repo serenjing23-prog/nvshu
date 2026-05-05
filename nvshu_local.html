@@ -383,14 +383,13 @@
       // 先让额外密钥对（如合约账户）部分签名
       signers.forEach(signer => tx.partialSign(signer));
       if (activeWalletType === 'browser') {
-        // 浏览器钱包：用 wallet adapter 签名
         const signed = await activeSigner.signTransaction(tx);
         const txid = await connection.sendRawTransaction(signed.serialize());
         await connection.confirmTransaction(txid);
         return txid;
       } else {
-        // 本地测试钱包：直接用 sign 方法
-        tx.sign(activeSigner);
+        // 本地钱包：用 partialSign 签名，不覆盖已有签名
+        tx.partialSign(activeSigner);
         const txid = await connection.sendRawTransaction(tx.serialize());
         await connection.confirmTransaction(txid);
         return txid;
