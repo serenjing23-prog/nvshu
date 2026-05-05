@@ -491,7 +491,7 @@ if (typeof Buffer === 'undefined') {
     function buildSignInstruction(contract, signer) {
       return new solanaWeb3.TransactionInstruction({
         keys: [{pubkey: contract, isSigner: false, isWritable: true}, {pubkey: signer, isSigner: true, isWritable: false}],
-        programId: PROGRAM_ID, data: Buffer.from([1])
+        programId: PROGRAM_ID, data: new Uint8Array([1])
       });
     }
 
