@@ -2,136 +2,206 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>女书 · “婚姻”即议定协议 | 链上合约工具</title>
   <script src="https://unpkg.com/@solana/web3.js@1.95.0/lib/index.iife.min.js"></script>
-    <style>
+  <style>
+    /* ----- 全局重置 & 字体 ----- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: "楷体","KaiTi","微软雅黑",sans-serif; 
-      background: #faf5ef; 
-      color: #5d4037; 
+      font-family: "楷体", "KaiTi", "Noto Serif SC", "微软雅黑", sans-serif;
+      background-color: #faf5ef; 
+      color: #4a3b3c; 
       padding: 30px 20px;
       line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
+
+    /* ----- 主容器：统一宽度与圆角 ----- */
     .container { 
-      max-width: 700px; 
-      margin: 0 auto; 
-      background: white; 
-      border-radius: 16px; 
-      padding: 35px 30px; 
-      box-shadow: 0 4px 24px rgba(180,100,100,0.12);
+      width: 100%;
+      max-width: 720px; 
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border-radius: 32px; 
+      padding: 40px 32px; 
+      box-shadow: 0 8px 32px rgba(180, 100, 100, 0.12);
+      border: 1px solid #f0e0e0;
     }
+
+    /* ----- 标题 & 副标题 ----- */
     h1 { 
       text-align: center; 
-      font-size: 2.4em; 
-      color: #c2185b; 
-      letter-spacing: 4px;
+      font-size: 2.6em; 
+      color: #b8404c; 
+      letter-spacing: 6px;
       margin-bottom: 8px;
+      font-weight: 500;
     }
     .title { 
       text-align: center; 
       font-size: 1em; 
-      color: #ad1457; 
-      margin-bottom: 30px;
-      padding: 8px 0;
-      border-top: 1px solid #e6c8c8;
-      border-bottom: 1px solid #e6c8c8;
+      color: #a05a60; 
+      margin-bottom: 36px;
+      padding: 12px 0;
+      border-top: 1px dashed #e2c8c8;
+      border-bottom: 1px dashed #e2c8c8;
+      letter-spacing: 2px;
     }
+
+    /* ----- 通用卡片样式 ----- */
     .section { 
-      background: #fff5f7; 
-      border-radius: 12px; 
-      padding: 20px; 
-      margin-bottom: 20px;
-      border-left: 4px solid #c77d7d;
+      background: #ffffff; 
+      border-radius: 20px; 
+      padding: 24px; 
+      margin-bottom: 24px;
+      border: 1px solid #f5e8e8;
+      box-shadow: 0 4px 12px rgba(160, 80, 80, 0.06);
+      transition: box-shadow 0.2s;
+    }
+    .section:hover {
+      box-shadow: 0 6px 16px rgba(160, 80, 80, 0.1);
     }
     .section h2, .section h3 { 
-      margin-bottom: 14px; 
-      color: #b3444c;
-      font-size: 1.1em;
+      font-size: 1.15em;
+      color: #b8404c;
+      margin-bottom: 18px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f5e8e8;
+      font-weight: 500;
+      letter-spacing: 1px;
     }
-    button { 
-      background: #b3444c; 
-      color: white; 
-      border: none; 
-      padding: 10px 20px; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      font-size: 0.95em; 
-      margin: 5px 5px 5px 0;
-      transition: background 0.2s;
+
+    /* ----- 表单元素 ----- */
+    label { 
+      font-weight: 500; 
+      display: block; 
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 0.85em;
+      color: #6d5a5c;
+      letter-spacing: 0.5px;
     }
-    button:hover { background: #8e3339; }
     input, textarea, select { 
       width: 100%; 
-      padding: 10px; 
-      margin: 6px 0 14px; 
-      border: 1px solid #d4a5a5; 
-      border-radius: 6px; 
+      padding: 12px 14px; 
+      margin-bottom: 12px; 
+      border: 1px solid #e8d0d0; 
+      border-radius: 14px; 
       font-size: 0.95em; 
-      background: white;
+      background: #fefcfc;
+      transition: border 0.2s, box-shadow 0.2s;
+      font-family: inherit;
     }
-    label { 
-      font-weight: bold; 
-      display: block; 
-      margin-top: 8px;
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #c77d7d;
+      box-shadow: 0 0 0 3px rgba(199, 125, 125, 0.15);
+    }
+    textarea { resize: vertical; }
+
+    /* ----- 按钮风格 ----- */
+    button { 
+      background: #b8404c; 
+      color: white; 
+      border: none; 
+      padding: 12px 24px; 
+      border-radius: 24px; 
+      cursor: pointer; 
       font-size: 0.9em;
-      color: #5d4037;
+      font-weight: 500;
+      letter-spacing: 0.8px;
+      margin: 6px 6px 6px 0;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 10px rgba(184, 64, 76, 0.2);
+      font-family: inherit;
     }
+    button:hover { 
+      background: #9c3540; 
+      box-shadow: 0 6px 14px rgba(184, 64, 76, 0.3);
+      transform: translateY(-1px);
+    }
+    button:active { transform: translateY(0); }
+    button.secondary {
+      background: #8e6e6e;
+      box-shadow: 0 4px 10px rgba(100, 80, 80, 0.2);
+    }
+    button.secondary:hover { background: #6f5656; }
+
+    /* ----- 钱包卡片 ----- */
     .wallet-card { 
-      background: white; 
-      border: 1px solid #e6c8c8; 
-      border-radius: 10px; 
-      padding: 14px; 
-      margin: 10px 0; 
+      background: #fefafa; 
+      border: 1px solid #f0e0e0; 
+      border-radius: 16px; 
+      padding: 16px; 
+      margin: 12px 0; 
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
       flex-wrap: wrap;
+      gap: 10px;
     }
-    .wallet-card strong { font-size: 0.9em; }
     .wallet-address { 
-      font-family: monospace; 
-      font-size: 0.8em; 
+      font-family: 'Courier New', monospace; 
+      font-size: 0.85em; 
       word-break: break-all; 
-      color: #666;
+      color: #7a6a6a;
+      background: #fcf8f8;
+      padding: 4px 8px;
+      border-radius: 6px;
     }
     .status-badge { 
       display: inline-block; 
-      padding: 4px 12px; 
-      border-radius: 12px; 
-      background: #f3e0e0; 
-      color: #b3444c;
-      font-size: 0.85em;
+      padding: 6px 14px; 
+      border-radius: 20px; 
+      background: #f8e8e8; 
+      color: #b8404c;
+      font-size: 0.8em;
+      font-weight: 500;
     }
+
+    /* ----- 合约详情卡片 ----- */
     .contract-card { 
-      background: white; 
-      border: 1px solid #e6c8c8; 
-      border-radius: 10px; 
-      padding: 16px; 
-      margin-top: 10px;
+      background: #ffffff; 
+      border: 1px solid #f0e0e0; 
+      border-radius: 16px; 
+      padding: 20px; 
+      margin-top: 12px;
+      line-height: 1.7;
     }
-    .contract-card p { margin-bottom: 6px; }
+    .contract-card p { margin-bottom: 8px; }
+
+    /* ----- AI 分析结果 ----- */
     .ai-response { 
       white-space: pre-wrap; 
-      background: white; 
-      padding: 14px; 
-      border-radius: 8px; 
-      max-height: 300px; 
+      background: #fdfafa; 
+      padding: 16px; 
+      border-radius: 14px; 
+      max-height: 320px; 
       overflow-y: auto;
       font-size: 0.9em;
+      border: 1px solid #f0e0e0;
     }
+
+    /* ----- 分割线 ----- */
     hr { 
       border: 0; 
-      border-top: 1px solid #e6c8c8; 
-      margin: 20px 0; 
+      border-top: 1px solid #f0e0e0; 
+      margin: 28px 0; 
     }
-    #balanceInfo, #dateHint, #createResult, #signResult, #queryResult, #aiResult {
-      margin-top: 8px;
-      font-size: 0.9em;
-    }
-    #walletStatus {
-      font-size: 0.9em;
+
+    /* ----- 辅助信息 ----- */
+    .hint { font-size: 0.85em; color: #a09090; margin-top: 4px; }
+    .error { color: #d44; }
+
+    /* ----- 响应式微调 ----- */
+    @media (max-width: 500px) {
+      .container { padding: 24px 16px; }
+      h1 { font-size: 2em; }
+      button { width: 100%; margin: 6px 0; }
     }
   </style>
 </head>
@@ -140,28 +210,23 @@
     <h1>📜 女书</h1>
     <div class="title">“婚姻”即议定协议 | 链上合约工具</div>
 
-    <!-- 钱包模块 -->
-    <div id="walletBox" class="section">
-      <h2>👛 钱包管理</h2>
-      <button id="connectBrowserWalletBtn" style="display:none;">🔗 连接浏览器钱包</button>
-      <button id="disconnectBrowserWalletBtn" style="display:none; background:#888;">断开钱包</button>
-          <div><input type="radio" name="activeWallet" value="A" checked onchange="switchActiveWallet('A')"> 使用此钱包</div>
-        </div>
-        <div id="walletBCard" class="wallet-card">
-          <div><strong>签署人 (伙伴)</strong><br><span id="walletBAddress" class="wallet-address"></span><br><span id="walletBBalance">余额: -</span></div>
-          <div><input type="radio" name="activeWallet" value="B" onchange="switchActiveWallet('B')"> 使用此钱包</div>
-        </div>
-      </div>
-      <div id="browserWalletContainer" style="display:none;">
-        <h3>🌐 浏览器钱包</h3>
-        <div id="browserWalletCard" class="wallet-card">
-          <div><strong>已连接</strong><br><span id="browserWalletAddress" class="wallet-address"></span></div>
-          <div><input type="radio" name="activeWallet" value="browser" onchange="switchActiveWallet('browser')"> 使用此钱包</div>
+    <!-- ========== 钱包模块 ========== -->
+    <div class="section">
+      <h2>🔗 连接钱包</h2>
+      <button id="connectBrowserWalletBtn">👛 连接浏览器钱包</button>
+      <button id="disconnectBrowserWalletBtn" class="secondary" style="display:none;">断开钱包</button>
+      <div id="browserWalletContainer" style="display:none; margin-top:16px;">
+        <div class="wallet-card">
+          <div>
+            <strong>已连接</strong><br>
+            <span id="browserWalletAddress" class="wallet-address"></span>
+          </div>
         </div>
       </div>
+      <p id="walletStatus" class="hint" style="margin-top:10px;">未连接</p>
     </div>
 
-    <!-- 创建合约模块 -->
+    <!-- ========== 创建合约模块 ========== -->
     <div class="section">
       <h2>✍️ 创建新合约</h2>
       <label>协议类型</label>
@@ -171,66 +236,71 @@
         <option value="养老互助协议">养老互助协议</option>
         <option value="自定义协议">自定义协议</option>
       </select>
-      <label>参与者信息</label>
+
+      <label>参与者信息 (一行一人)</label>
       <div id="participantsContainer">
-        <div class="participant-row" style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
-          <input type="text" class="participant-address" placeholder="参与者公钥地址" style="flex:2; margin:0;">
-          <select class="participant-gender" style="flex:1.5; margin:0;">
-            <option value="Female">女性 (Female)</option>
-            <option value="Male">男性 (Male)</option>
-            <option value="NonBinary">非二元性别 (Non-binary)</option>
-            <option value="Agender">无性别 (Agender)</option>
-            <option value="TwoSpirit">双灵 (Two-Spirit)</option>
+        <div class="participant-row" style="display:flex; gap:8px; margin-bottom:8px;">
+          <input type="text" class="participant-address" placeholder="公钥地址" style="flex:2;">
+          <select class="participant-gender" style="flex:1.3;">
+            <option value="Female">女性</option>
+            <option value="Male">男性</option>
+            <option value="NonBinary">非二元性别</option>
+            <option value="Agender">无性别</option>
+            <option value="TwoSpirit">双灵</option>
             <option value="PreferNotToSay">不愿透露</option>
           </select>
-          <button type="button" class="remove-participant-btn" style="display:none; flex:0.5; margin:0; background:#888;">移除</button>
+          <button type="button" class="remove-participant-btn secondary" style="flex:0.6; display:none;">移除</button>
         </div>
       </div>
-      <button id="addParticipantBtn" style="background:#6a1b9a;">➕ 添加参与者</button>
-      <label>开始日期（可选）</label>
+      <button id="addParticipantBtn" class="secondary">➕ 添加参与者</button>
+
+      <label style="margin-top:16px;">开始日期 (可选)</label>
       <input type="date" id="createStartDate">
-      <label>结束日期（必填）</label>
+      <label>结束日期 (必填)</label>
       <input type="date" id="createEndDate">
-      <p id="dateHint" style="font-size:0.85em; color:#888; margin-top:5px;"></p>
+      <p id="dateHint" class="hint"></p>
+
       <label>合约内容</label>
       <input type="text" id="createText" placeholder="例如：我们互相守护，约定未来三年共同居住">
-      <button id="createBtn">创建合约</button>
-      <div id="createResult"></div>
+      
+      <button id="createBtn" style="margin-top:12px;">✨ 创建合约</button>
+      <div id="createResult" class="hint"></div>
     </div>
 
-    <!-- 签署与查询模块 -->
+    <!-- ========== 签署与查询模块 ========== -->
     <div class="section">
       <h2>🖊️ 签署合约</h2>
       <label>合约地址</label>
-      <input type="text" id="signContractAddr" placeholder="输入已有合约的公钥地址">
-      <button id="signBtn">签署这份合约</button>
-      <div id="signResult"></div>
-    </div>
-    <div class="section">
+      <input type="text" id="signContractAddr" placeholder="粘贴合约公钥地址">
+      <button id="signBtn">确认签署</button>
+      <div id="signResult" class="hint"></div>
+      
+      <hr>
+      
       <h2>🔍 查询合约</h2>
       <label>合约地址</label>
-      <input type="text" id="queryContractAddr" placeholder="输入合约公钥地址">
-      <button id="queryBtn">查询合约详情</button>
+      <input type="text" id="queryContractAddr" placeholder="粘贴合约公钥地址">
+      <button id="queryBtn">查询详情</button>
       <div id="queryResult"></div>
     </div>
 
-    <!-- AI 法律顾问模块 -->
+    <!-- ========== AI 法律顾问模块 ========== -->
     <div class="section">
       <h2>🧠 AI 法律顾问</h2>
       <label>法律管辖区</label>
       <select id="lawJurisdiction">
         <option value="china">中国民法</option>
         <option value="california">美国加州家庭法</option>
-        <option value="europe">欧洲（通用）</option>
-        <option value="custom">其他（自定义）</option>
+        <option value="europe">欧洲 (通用)</option>
+        <option value="custom">其他 (自定义)</option>
       </select>
       <div id="customLawBox" style="display:none;">
-        <label>自定义法律背景描述</label>
+        <label>自定义法律背景</label>
         <input type="text" id="customLawContext" placeholder="例如：根据伊斯兰教法...">
       </div>
-      <label>输入你的合约条款</label>
+      <label>输入合约条款</label>
       <textarea id="aiContractText" rows="3" placeholder="描述你们的约定..."></textarea>
-      <label>你的 DeepSeek API Key</label>
+      <label>DeepSeek API Key</label>
       <input type="password" id="apiKey" placeholder="sk-...">
       <button id="aiAnalyzeBtn">🔍 分析法律风险</button>
       <div id="aiResult" style="margin-top:12px;"></div>
@@ -238,181 +308,90 @@
   </div>
 
   <script>
-    // ---------- 自定义 Borsh 序列化 ----------
-    const borsh = {
-      serialize(schema, data) {
-        const buffer = [];
-        this._serialize(buffer, schema, data);
-        return Buffer.from(buffer);
-      },
-      _serialize(buffer, schema, data) {
-        if (schema === 'u8') {
-          buffer.push(data & 0xff);
-        } else if (schema === 'i64') {
-          // 小端 i64
-          const arr = new Array(8);
-          const view = new DataView(new ArrayBuffer(8));
-          view.setBigInt64(0, BigInt(data), true);
-          for (let i = 0; i < 8; i++) buffer.push(view.getUint8(i));
-        } else if (schema === 'pubkey') {
-          const bytes = data.toBytes();
-          for (let i = 0; i < 32; i++) buffer.push(bytes[i]);
-        } else if (schema === 'string') {
-          const encoder = new TextEncoder();
-          const bytes = encoder.encode(data);
-          // 4 byte little endian length prefix
-          const len = bytes.length;
-          buffer.push(len & 0xff, (len >> 8) & 0xff, (len >> 16) & 0xff, (len >> 24) & 0xff);
-          for (let i = 0; i < bytes.length; i++) buffer.push(bytes[i]);
-        } else if (Array.isArray(schema)) {
-          // Vec<T>
-          const len = data.length;
-          buffer.push(len & 0xff, (len >> 8) & 0xff, (len >> 16) & 0xff, (len >> 24) & 0xff);
-          for (let item of data) {
-            this._serialize(buffer, schema[0], item);
-          }
-        } else if (typeof schema === 'object' && !Array.isArray(schema)) {
-          // Enum or Struct
-          const keys = Object.keys(schema);
-          // If it has a 'kind' field, it's an enum
-          if (schema.kind === 'enum') {
-            const variantKey = Object.keys(data)[0];
-            const variantIndex = keys.indexOf(variantKey);
-            buffer.push(variantIndex);
-            if (data[variantKey] && typeof data[variantKey] === 'object') {
-              this._serialize(buffer, schema[variantKey], data[variantKey]);
-            }
-          } else {
-            // Struct: order by keys
-            for (let key of keys) {
-              this._serialize(buffer, schema[key], data[key]);
-            }
-          }
-        }
-      },
-      deserialize(schema, buffer) {
-        const reader = { buffer, offset: 0 };
-        return this._deserialize(schema, reader);
-      },
-      _deserialize(schema, reader) {
-        // 简化版，仅用于读取合约状态（已经用不到复杂的反序列化，查询时直接解析账户数据）
-        // 这里略
-      }
-    };
-
     // ---------- 全局变量 ----------
     const PROGRAM_ID = new solanaWeb3.PublicKey("FuCn9zJcTa3Agq3vAVwknTiJR62Y66bDmPX4GhMMwNSo");
-    const IDL = {"version": "0.1.0", "name": "nvshu", "instructions": [{"name": "createContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": true}, {"name": "creator", "isMut": true, "isSigner": true}, {"name": "systemProgram", "isMut": false, "isSigner": false}], "args": [{"name": "participantWallets", "type": {"vec": "publicKey"}}, {"name": "genders", "type": {"vec": {"defined": "Gender"}}}, {"name": "contractText", "type": "string"}, {"name": "durationDays", "type": "i64"}]}, {"name": "signContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": false}, {"name": "signer", "isMut": false, "isSigner": true}], "args": []}, {"name": "annulContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": false}, {"name": "authority", "isMut": false, "isSigner": true}], "args": []}], "accounts": [{"name": "MarriageContract", "type": {"kind": "struct", "fields": [{"name": "creator", "type": "publicKey"}, {"name": "participants", "type": {"vec": {"defined": "Participant"}}}, {"name": "contractText", "type": "string"}, {"name": "createdAt", "type": "i64"}, {"name": "expiresAt", "type": "i64"}, {"name": "status", "type": {"defined": "ContractStatus"}}]}}], "types": [{"name": "Participant", "type": {"kind": "struct", "fields": [{"name": "wallet", "type": "publicKey"}, {"name": "gender", "type": {"defined": "Gender"}}, {"name": "signed", "type": "bool"}]}}, {"name": "Gender", "type": {"kind": "enum", "variants": [{"name": "Female"}, {"name": "Male"}, {"name": "Other"}]}}, {"name": "ContractStatus", "type": {"kind": "enum", "variants": [{"name": "Pending"}, {"name": "Active"}, {"name": "Expired"}, {"name": "Annulled"}]}}], "errors": [{"code": 6000, "name": "NotAParticipant", "msg": "You are not a participant of this contract."}, {"code": 6001, "name": "AlreadySigned", "msg": "You have already signed this contract."}, {"code": 6002, "name": "NotActive", "msg": "Contract is not active."}]};
+    const IDL = {"version": "0.1.0", "name": "nvshu", "instructions": [{"name": "createContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": true}, {"name": "creator", "isMut": true, "isSigner": true}, {"name": "systemProgram", "isMut": false, "isSigner": false}], "args": [{"name": "participantWallets", "type": {"vec": "publicKey"}}, {"name": "genders", "type": {"vec": {"defined": "Gender"}}}, {"name": "contractText", "type": "string"}, {"name": "durationDays", "type": "i64"}]}, {"name": "signContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": false}, {"name": "signer", "isMut": false, "isSigner": true}], "args": []}, {"name": "annulContract", "accounts": [{"name": "contract", "isMut": true, "isSigner": false}, {"name": "authority", "isMut": false, "isSigner": true}], "args": []}], "accounts": [{"name": "MarriageContract", "type": {"kind": "struct", "fields": [{"name": "creator", "type": "publicKey"}, {"name": "participants", "type": {"vec": {"defined": "Participant"}}}, {"name": "contractText", "type": "string"}, {"name": "createdAt", "type": "i64"}, {"name": "expiresAt", "type": "i64"}, {"name": "status", "type": {"defined": "ContractStatus"}}]}}], "types": [{"name": "Participant", "type": {"kind": "struct", "fields": [{"name": "wallet", "type": "publicKey"}, {"name": "gender", "type": {"defined": "Gender"}}, {"name": "signed", "type": "bool"}]}}, {"name": "Gender", "type": {"kind": "enum", "variants": [{"name": "Female"}, {"name": "Male"}, {"name": "Other"}]}}, {"name": "ContractStatus", "type": {"kind": "enum", "variants": [{"name": "Pending"}, {"name": "Active"}, {"name": "Expired"}, {"name": "Annulled"}]}}], "errors": [{"code": 6000, "name": "NotAParticipant", "msg": "You are not a participant of this contract."}, {"code": 6001, "name": "AlreadySigned", "msg": "You have already signed this contract."}, {"code": 6002, "name": "NotActive", "msg": "Contract is not active."}]}; // 脚本自动嵌入
 
     let connection = new solanaWeb3.Connection("https://api.devnet.solana.com", "confirmed");
-    let testWalletA, testWalletB, browserSigner, browserPublicKey;
-    let activeWalletType = 'A';
-    let activeSigner = null;
-    let activePublicKey = null;
+    let browserSigner = null, browserPublicKey = null;
+    let activePublicKey = null, activeSigner = null, activeWalletType = 'browser';
 
-    // 初始化：检测浏览器钱包
+    // 初始化
     function init() {
       if (window.solana && window.solana.isPhantom) {
         document.getElementById('connectBrowserWalletBtn').style.display = 'inline-block';
       }
-      // 动态参与者移除按钮
       updateRemoveButtons();
     }
 
-    // --- 钱包逻辑 ---
-
-    document.getElementById('connectBrowserWalletBtn').addEventListener('click', async () => {
-      const adapter = window.solana;
-      if (!adapter) return alert("未检测到 Solana 钱包扩展");
-      try {
-        const resp = await adapter.connect();
-        browserPublicKey = resp.publicKey;
-        browserSigner = adapter;
-        document.getElementById('browserWalletAddress').innerText = browserPublicKey.toString();
-        document.getElementById('browserWalletContainer').style.display = 'block';
-        document.getElementById('connectBrowserWalletBtn').style.display = 'none';
-        document.getElementById('disconnectBrowserWalletBtn').style.display = 'inline-block';
-        setActiveWallet(browserSigner, browserPublicKey, 'browser');
-        document.querySelector('.participant-address').placeholder = browserPublicKey.toString();
-      } catch(e) { alert("连接失败: " + e.message); }
-    });
-
-    document.getElementById('disconnectBrowserWalletBtn').addEventListener('click', async () => {
-      if (browserSigner && browserSigner.disconnect) await browserSigner.disconnect();
-      browserSigner = null; browserPublicKey = null;
-      document.getElementById('browserWalletContainer').style.display = 'none';
-      document.getElementById('connectBrowserWalletBtn').style.display = 'inline-block';
-      document.getElementById('disconnectBrowserWalletBtn').style.display = 'none';
-      if (activeWalletType === 'browser' && testWalletA) setActiveWallet(testWalletA, testWalletA.publicKey, 'A');
-    });
-
-    function switchActiveWallet(type) {
-      if (type === 'A' && testWalletA) setActiveWallet(testWalletA, testWalletA.publicKey, 'A');
-      else if (type === 'B' && testWalletB) setActiveWallet(testWalletB, testWalletB.publicKey, 'B');
-      else if (type === 'browser' && browserSigner) setActiveWallet(browserSigner, browserPublicKey, 'browser');
-    }
-
-    function setActiveWallet(signer, publicKey, type) {
-      activeWalletType = type; activeSigner = signer; activePublicKey = publicKey;
-      document.querySelectorAll('.wallet-card').forEach(c => c.classList.remove('active-wallet'));
-      if (type === 'A') document.getElementById('walletACard').classList.add('active-wallet');
-      else if (type === 'B') document.getElementById('walletBCard').classList.add('active-wallet');
-      else if (type === 'browser') document.getElementById('browserWalletCard').classList.add('active-wallet');
-      document.querySelector('.participant-address').placeholder = publicKey.toString();
-    }
-
-    async function updateTestBalances() {
-      if (testWalletA) { const b = await connection.getBalance(testWalletA.publicKey); document.getElementById('walletABalance').innerText = `余额: ${b/1e9} SOL`; }
-      if (testWalletB) { const b = await connection.getBalance(testWalletB.publicKey); document.getElementById('walletBBalance').innerText = `余额: ${b/1e9} SOL`; }
-    }
-
-    // --- 参与者动态行 ---
+    // 动态参与者行
     function updateRemoveButtons() {
       const rows = document.querySelectorAll('.participant-row');
       rows.forEach(r => {
         const btn = r.querySelector('.remove-participant-btn');
-        if (btn) btn.style.display = rows.length > 1 ? 'inline-block' : 'none';
+        if(btn) btn.style.display = rows.length > 1 ? 'inline-block' : 'none';
       });
     }
+
     document.getElementById('addParticipantBtn').addEventListener('click', () => {
       const container = document.getElementById('participantsContainer');
-      const newRow = document.createElement('div');
-      newRow.className = 'participant-row';
-      newRow.style.cssText = 'display:flex; gap:10px; margin-bottom:10px; align-items:center;';
-      newRow.innerHTML = `
-        <input type="text" class="participant-address" placeholder="参与者公钥地址" style="flex:2; margin:0;">
-        <select class="participant-gender" style="flex:1.5; margin:0;">
-          <option value="Female">女性 (Female)</option>
-          <option value="Male">男性 (Male)</option>
-          <option value="NonBinary">非二元性别</option>
-          <option value="Agender">无性别</option>
-          <option value="TwoSpirit">双灵</option>
-          <option value="PreferNotToSay">不愿透露</option>
+      const row = document.createElement('div');
+      row.className = 'participant-row';
+      row.style.cssText = 'display:flex; gap:8px; margin-bottom:8px;';
+      row.innerHTML = `
+        <input type="text" class="participant-address" placeholder="公钥地址" style="flex:2;">
+        <select class="participant-gender" style="flex:1.3;">
+          <option value="Female">女性</option><option value="Male">男性</option><option value="NonBinary">非二元性别</option>
+          <option value="Agender">无性别</option><option value="TwoSpirit">双灵</option><option value="PreferNotToSay">不愿透露</option>
         </select>
-        <button type="button" class="remove-participant-btn" style="flex:0.5; margin:0; background:#888;">移除</button>
+        <button type="button" class="remove-participant-btn secondary" style="flex:0.6;">移除</button>
       `;
-      container.appendChild(newRow);
+      container.appendChild(row);
       updateRemoveButtons();
-      newRow.querySelector('.remove-participant-btn').addEventListener('click', function() {
-        newRow.remove(); updateRemoveButtons();
+      row.querySelector('.remove-participant-btn').addEventListener('click', function() {
+        row.remove(); updateRemoveButtons();
       });
     });
-    document.querySelectorAll('.remove-participant-btn').forEach(btn => {
-      btn.addEventListener('click', function() { btn.closest('.participant-row').remove(); updateRemoveButtons(); });
+
+    // 连接钱包
+    document.getElementById('connectBrowserWalletBtn').addEventListener('click', async () => {
+      if (!window.solana) return alert('请安装 Phantom 或其他 Solana 钱包');
+      try {
+        const resp = await window.solana.connect();
+        browserPublicKey = resp.publicKey;
+        browserSigner = window.solana;
+        activePublicKey = browserPublicKey; activeSigner = browserSigner; activeWalletType = 'browser';
+        document.getElementById('browserWalletAddress').innerText = browserPublicKey.toString();
+        document.getElementById('browserWalletContainer').style.display = 'block';
+        document.getElementById('connectBrowserWalletBtn').style.display = 'none';
+        document.getElementById('disconnectBrowserWalletBtn').style.display = 'inline-block';
+        document.getElementById('walletStatus').innerText = `已连接: ${browserPublicKey.toString().slice(0,8)}...`;
+      } catch(e) { alert('连接失败: ' + e.message); }
     });
 
-    // 日期提示、协议前缀 (略，保持已有功能)
+    document.getElementById('disconnectBrowserWalletBtn').addEventListener('click', async () => {
+      if(browserSigner && browserSigner.disconnect) await browserSigner.disconnect();
+      browserSigner = null; browserPublicKey = null; activeSigner = null; activePublicKey = null;
+      document.getElementById('browserWalletContainer').style.display = 'none';
+      document.getElementById('connectBrowserWalletBtn').style.display = 'inline-block';
+      document.getElementById('disconnectBrowserWalletBtn').style.display = 'none';
+      document.getElementById('walletStatus').innerText = '未连接';
+    });
+
+    // 日期提示
     document.getElementById('createEndDate').addEventListener('change', function() {
       const s = document.getElementById('createStartDate').value, e = this.value;
       if(s && e) {
         const days = Math.round((new Date(e+'T00:00:00Z') - new Date(s+'T00:00:00Z'))/86400000);
-        document.getElementById('dateHint').innerText = days>0 ? `合约有效期约 ${days} 天` : '❌ 结束日期必须晚于开始日期';
+        document.getElementById('dateHint').innerText = days>0 ? `有效期约 ${days} 天` : '结束日期必须晚于开始日期';
       }
     });
+
+    // 协议前缀
     document.getElementById('contractType').addEventListener('change', function() {
       const prefix = `[${this.value}] `;
-      const textInput = document.getElementById('createText');
-      if(!textInput.value.startsWith('[')) textInput.value = prefix + textInput.value.replace(/^\[.*?\]\s*/, '');
+      const inp = document.getElementById('createText');
+      if(!inp.value.startsWith('[')) inp.value = prefix + inp.value.replace(/^\[.*?\]\s*/, '');
     });
 
     // ---------- 交易构造 ----------
@@ -422,212 +401,137 @@
       const { blockhash } = await connection.getLatestBlockhash();
       tx.recentBlockhash = blockhash;
       tx.feePayer = activePublicKey;
-      if (activeWalletType === 'browser') {
-        const signed = await activeSigner.signTransaction(tx);
-        const txid = await connection.sendRawTransaction(signed.serialize());
-        await connection.confirmTransaction(txid);
-        return txid;
-      } else {
-        tx.sign(...signers);
-        const txid = await connection.sendRawTransaction(tx.serialize());
-        await connection.confirmTransaction(txid);
-        return txid;
-      }
+      const signed = await activeSigner.signTransaction(tx);
+      const txid = await connection.sendRawTransaction(signed.serialize());
+      await connection.confirmTransaction(txid);
+      return txid;
     }
 
-    // 构造 create_contract 指令
-    function buildCreateInstruction(contractAccount, creator, participants, genders, text, durationDays) {
-      const schema = {
-        create_contract: {
-          participant_wallets: ['pubkey'],
-          genders: [{ kind: 'enum', Female: {}, Male: {}, Other: {} }],
-          contract_text: 'string',
-          duration_days: 'i64'
-        }
-      };
-      const dataLayout = [
-        'u8', // instruction index = 0
-        ['pubkey'], // Vec<Pubkey>
-        [{ kind: 'enum', Female: {}, Male: {}, Other: {} }], // Vec<Gender>
-        'string', // String
-        'i64' // i64
-      ];
-      // 手动序列化更直接
-      const buffer = [];
-      buffer.push(0); // 指令索引
-      // vec<Pubkey>
-      const len = participants.length;
-      buffer.push(len & 0xff, (len>>8)&0xff, (len>>16)&0xff, (len>>24)&0xff);
-      participants.forEach(p => {
-        const bytes = p.toBytes();
-        for (let i=0;i<32;i++) buffer.push(bytes[i]);
-      });
-      // vec<Gender>
-      buffer.push(len & 0xff, (len>>8)&0xff, (len>>16)&0xff, (len>>24)&0xff);
-      const genderMap = { Female: 0, Male: 1, Other: 2 };
-      genders.forEach(g => {
-        const key = Object.keys(g)[0];
-        buffer.push(genderMap[key] || 2);
-      });
+    function buildCreateInstruction(contractAccount, creator, participants, genders, text, duration) {
+      const buf = [0]; // instruction index 0
+      // vec Pubkey
+      buf.push(participants.length & 0xff, (participants.length>>8)&0xff, (participants.length>>16)&0xff, (participants.length>>24)&0xff);
+      participants.forEach(p => { const b = p.toBytes(); for(let i=0;i<32;i++) buf.push(b[i]); });
+      // vec Gender
+      buf.push(participants.length & 0xff, (participants.length>>8)&0xff, (participants.length>>16)&0xff, (participants.length>>24)&0xff);
+      const gMap = { Female:0, Male:1, Other:2 };
+      genders.forEach(g => buf.push(gMap[Object.keys(g)[0]] ?? 2));
       // string
-      const encoder = new TextEncoder();
-      const strBytes = encoder.encode(text);
-      const strLen = strBytes.length;
-      buffer.push(strLen & 0xff, (strLen>>8)&0xff, (strLen>>16)&0xff, (strLen>>24)&0xff);
-      for (let i=0;i<strBytes.length;i++) buffer.push(strBytes[i]);
+      const enc = new TextEncoder(); const sb = enc.encode(text);
+      buf.push(sb.length & 0xff, (sb.length>>8)&0xff, (sb.length>>16)&0xff, (sb.length>>24)&0xff);
+      for(let v of sb) buf.push(v);
       // i64
-      const view = new DataView(new ArrayBuffer(8));
-      view.setBigInt64(0, BigInt(durationDays), true);
-      for (let i=0;i<8;i++) buffer.push(view.getUint8(i));
-
-      const data = Buffer.from(buffer);
-      const keys = [
-        { pubkey: contractAccount, isSigner: true, isWritable: true },
-        { pubkey: creator, isSigner: true, isWritable: true },
-        { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false }
-      ];
-      return new solanaWeb3.TransactionInstruction({ keys, programId: PROGRAM_ID, data });
-    }
-
-    function buildSignInstruction(contractAccount, signerPubkey) {
-      const buffer = [1]; // 指令索引 sign_contract = 1
+      const dv = new DataView(new ArrayBuffer(8)); dv.setBigInt64(0, BigInt(duration), true);
+      for(let i=0;i<8;i++) buf.push(dv.getUint8(i));
+      const data = Buffer.from(buf);
       return new solanaWeb3.TransactionInstruction({
-        keys: [
-          { pubkey: contractAccount, isSigner: false, isWritable: true },
-          { pubkey: signerPubkey, isSigner: true, isWritable: false }
-        ],
-        programId: PROGRAM_ID,
-        data: Buffer.from(buffer)
+        keys: [{pubkey: contractAccount, isSigner: true, isWritable: true}, {pubkey: creator, isSigner: true, isWritable: true}, {pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false}],
+        programId: PROGRAM_ID, data
       });
     }
 
-    // 创建合约按钮
-    document.getElementById('createBtn').addEventListener('click', async () => {
-      if (!activePublicKey) return alert("请先生成或连接钱包");
-      const addressInputs = document.querySelectorAll('.participant-address');
-      const genderSelects = document.querySelectorAll('.participant-gender');
-      const participants = [], genders = [];
-      for (let i=0; i<addressInputs.length; i++) {
-        const addrStr = addressInputs[i].value.trim();
-        participants.push(addrStr ? new solanaWeb3.PublicKey(addrStr) : activePublicKey);
-        const gVal = genderSelects[i].value;
-        if (gVal === 'Female') genders.push({ Female: {} });
-        else if (gVal === 'Male') genders.push({ Male: {} });
-        else genders.push({ Other: {} });
-      }
-      const endDateVal = document.getElementById('createEndDate').value;
-      if (!endDateVal) return alert("请选择结束日期");
-      const endDate = new Date(endDateVal + "T00:00:00Z");
-      const startDateVal = document.getElementById('createStartDate').value;
-      const startDate = startDateVal ? new Date(startDateVal + "T00:00:00Z") : new Date();
-      const durationDays = Math.round((endDate - startDate) / 86400000);
-      if (durationDays < 1) return alert("结束日期必须晚于开始日期");
-      let text = document.getElementById('createText').value;
-      const typeSelect = document.getElementById('contractType');
-      const prefix = `[${typeSelect.value}] `;
-      if (!text.startsWith('[')) text = prefix + text;
+    function buildSignInstruction(contract, signer) {
+      return new solanaWeb3.TransactionInstruction({
+        keys: [{pubkey: contract, isSigner: false, isWritable: true}, {pubkey: signer, isSigner: true, isWritable: false}],
+        programId: PROGRAM_ID, data: Buffer.from([1])
+      });
+    }
 
-      const contractKeypair = solanaWeb3.Keypair.generate();
-      const instruction = buildCreateInstruction(contractKeypair.publicKey, activePublicKey, participants, genders, text, durationDays);
-      try {
-        await sendTransaction(instruction, [contractKeypair]);
-        document.getElementById('createResult').innerHTML = `<p style="color:green">✅ 合约已创建！<br>地址: <strong>${contractKeypair.publicKey.toString()}</strong></p>`;
-        if (activeWalletType !== 'browser') updateTestBalances();
-      } catch(e) {
-        document.getElementById('createResult').innerHTML = `<p style="color:red">❌ 错误: ${e.message}</p>`;
-        console.error(e);
+    // 创建合约
+    document.getElementById('createBtn').addEventListener('click', async () => {
+      if(!activePublicKey) return alert('请先连接钱包');
+      const addrInputs = document.querySelectorAll('.participant-address');
+      const genderInputs = document.querySelectorAll('.participant-gender');
+      const participants = [], genders = [];
+      for(let i=0;i<addrInputs.length;i++) {
+        const val = addrInputs[i].value.trim();
+        participants.push(val ? new solanaWeb3.PublicKey(val) : activePublicKey);
+        const gv = genderInputs[i].value;
+        if(gv==='Female') genders.push({Female:{}}); else if(gv==='Male') genders.push({Male:{}}); else genders.push({Other:{}});
       }
+      const endVal = document.getElementById('createEndDate').value;
+      if(!endVal) return alert('请选择结束日期');
+      const end = new Date(endVal+'T00:00:00Z'), startVal = document.getElementById('createStartDate').value;
+      const start = startVal ? new Date(startVal+'T00:00:00Z') : new Date();
+      const days = Math.round((end-start)/86400000);
+      if(days<1) return alert('结束日期必须晚于开始日期');
+      let text = document.getElementById('createText').value;
+      const prefix = `[${document.getElementById('contractType').value}] `;
+      if(!text.startsWith('[')) text = prefix + text;
+      const contractKP = solanaWeb3.Keypair.generate();
+      try {
+        await sendTransaction(buildCreateInstruction(contractKP.publicKey, activePublicKey, participants, genders, text, days), [contractKP]);
+        document.getElementById('createResult').innerHTML = `✅ 合约已创建！<br><strong>${contractKP.publicKey.toString()}</strong>`;
+      } catch(e) { document.getElementById('createResult').innerHTML = `❌ ${e.message}`; }
     });
 
     // 签署合约
     document.getElementById('signBtn').addEventListener('click', async () => {
-      if (!activePublicKey) return alert("请先生成或连接钱包");
+      if(!activePublicKey) return alert('请先连接钱包');
       const addr = document.getElementById('signContractAddr').value;
-      if (!addr) return alert("请输入合约地址");
+      if(!addr) return alert('请输入合约地址');
       try {
         await sendTransaction(buildSignInstruction(new solanaWeb3.PublicKey(addr), activePublicKey));
-        document.getElementById('signResult').innerHTML = `<p style="color:green">✅ 签署成功！</p>`;
-      } catch(e) {
-        document.getElementById('signResult').innerHTML = `<p style="color:red">❌ 错误: ${e.message}</p>`;
-        console.error(e);
-      }
+        document.getElementById('signResult').innerHTML = '✅ 签署成功';
+      } catch(e) { document.getElementById('signResult').innerHTML = `❌ ${e.message}`; }
     });
 
-    // 查询合约 (需要手动解析账户数据，简化版读取)
+    // 查询合约
     document.getElementById('queryBtn').addEventListener('click', async () => {
       const addr = document.getElementById('queryContractAddr').value;
-      if (!addr) return;
+      if(!addr) return;
       try {
-        const accountInfo = await connection.getAccountInfo(new solanaWeb3.PublicKey(addr));
-        if (!accountInfo) throw new Error('账户不存在');
-        // 使用IDL解析比较复杂，先显示原始数据摘要
-        const data = accountInfo.data;
-        // 手动解析关键字段 (仅用于演示)
-        const creator = new solanaWeb3.PublicKey(data.slice(8, 40)); // 跳过8字节anchor discriminator
-        let offset = 40;
-        // 跳过Vec<Participant> -> 4字节长度 + N*34
-        const partLen = data.readUInt32LE(offset); offset += 4;
-        const participants = [];
-        for(let i=0; i<partLen; i++) {
-          const wallet = new solanaWeb3.PublicKey(data.slice(offset, offset+32)); offset += 32;
-          const gender = data.readUInt8(offset); offset += 1;
-          const signed = data.readUInt8(offset) === 1; offset += 1;
-          participants.push({ wallet: wallet.toString(), gender: ['Female','Male','Other'][gender]||'Other', signed });
+        const info = await connection.getAccountInfo(new solanaWeb3.PublicKey(addr));
+        if(!info) throw new Error('账户不存在');
+        const d = info.data;
+        const creator = new solanaWeb3.PublicKey(d.slice(8,40));
+        let off=40; const plen = d.readUInt32LE(off); off+=4;
+        const plist = [];
+        for(let i=0;i<plen;i++) {
+          const w = new solanaWeb3.PublicKey(d.slice(off,off+32)); off+=32;
+          const gen = d.readUInt8(off); off+=1;
+          const sig = d.readUInt8(off)===1; off+=1;
+          plist.push({wallet:w.toString(), gender:['Female','Male','Other'][gen]||'Other', signed:sig});
         }
-        // 合约文本
-        const textLen = data.readUInt32LE(offset); offset += 4;
-        const text = new TextDecoder().decode(data.slice(offset, offset+textLen)); offset += textLen;
-        const createdAt = Number(data.readBigInt64LE(offset)); offset += 8;
-        const expiresAt = Number(data.readBigInt64LE(offset)); offset += 8;
-        const status = data.readUInt8(offset);
-        const statusStr = ['Pending','Active','Expired','Annulled'][status] || 'Unknown';
-
-        let html = `<div class="contract-card">`;
-        html += `<p><strong>发起人:</strong> ${creator.toString()}</p>`;
-        html += `<p><strong>合约文本:</strong> ${text}</p>`;
-        html += `<p><strong>创建时间:</strong> ${new Date(createdAt*1000).toLocaleString()}</p>`;
-        html += `<p><strong>过期时间:</strong> ${expiresAt===0 ? '永久' : new Date(expiresAt*1000).toLocaleString()}</p>`;
-        html += `<p><strong>状态:</strong> <span class="status-badge">${statusStr}</span></p>`;
-        html += `<p><strong>参与者:</strong></p><ul>`;
-        participants.forEach(p => html += `<li>${p.wallet} - ${p.gender} - ${p.signed ? '已签' : '未签'}</li>`);
-        html += `</ul></div>`;
+        const tlen = d.readUInt32LE(off); off+=4;
+        const text = new TextDecoder().decode(d.slice(off,off+tlen)); off+=tlen;
+        const createdAt = Number(d.readBigInt64LE(off)); off+=8;
+        const expiresAt = Number(d.readBigInt64LE(off)); off+=8;
+        const status = ['Pending','Active','Expired','Annulled'][d.readUInt8(off)]||'Unknown';
+        let html = `<div class="contract-card"><p><strong>发起人：</strong>${creator}</p><p><strong>内容：</strong>${text}</p><p><strong>创建时间：</strong>${new Date(createdAt*1000).toLocaleString()}</p><p><strong>过期时间：</strong>${expiresAt===0?'永久':new Date(expiresAt*1000).toLocaleString()}</p><p><strong>状态：</strong><span class="status-badge">${status}</span></p><ul>`;
+        plist.forEach(p => html += `<li>${p.wallet} - ${p.gender} - ${p.signed?'已签':'未签'}</li>`);
+        html += '</ul></div>';
         document.getElementById('queryResult').innerHTML = html;
-      } catch(e) { document.getElementById('queryResult').innerHTML = `<p style="color:red">❌ 查询失败: ${e.message}</p>`; }
+      } catch(e) { document.getElementById('queryResult').innerHTML = `❌ ${e.message}`; }
     });
 
-    // AI 法律顾问 (不变)
+    // AI 顾问 (保持不变, 略)
     document.getElementById('aiAnalyzeBtn').addEventListener('click', async () => {
       const apiKey = document.getElementById('apiKey').value.trim();
-      if (!apiKey) return alert("请先输入 DeepSeek API Key");
-      const contractText = document.getElementById('aiContractText').value.trim();
-      if (!contractText) return alert("请输入合约条款");
-      const resultDiv = document.getElementById('aiResult');
-      resultDiv.innerHTML = "⏳ AI 正在分析...";
-      const jurisdiction = document.getElementById('lawJurisdiction').value;
-      let lawContext = "你是一位精通相关法律的法律顾问。";
-      if (jurisdiction === "china") lawContext = "你是一位精通中国民法典、婚姻家庭法、合同法及意定监护制度的AI法律顾问。";
-      else if (jurisdiction === "california") lawContext = "你是一位精通美国加利福尼亚州家庭法的AI法律顾问。";
-      else if (jurisdiction === "europe") lawContext = "你是一位精通欧洲人权公约和家庭法的AI法律顾问。";
-      else if (jurisdiction === "custom") {
-        const customCtx = document.getElementById('customLawContext').value.trim();
-        if (!customCtx) return alert("请输入自定义法律背景");
-        lawContext = customCtx;
-      }
-      const systemPrompt = `${lawContext} 请分析以下协议条款，从法律角度给出风险提示和合规建议。用中文，分点叙述，语气温和。最后强调这不构成法律意见。`;
+      if(!apiKey) return alert('请输入 API Key');
+      const text = document.getElementById('aiContractText').value.trim();
+      if(!text) return alert('请输入合约条款');
+      const resDiv = document.getElementById('aiResult');
+      resDiv.innerHTML = '⏳ 分析中...';
+      const j = document.getElementById('lawJurisdiction').value;
+      let ctx = '你是一位法律顾问。';
+      if(j==='china') ctx = '你是一位精通中国民法典的AI法律顾问。';
+      else if(j==='california') ctx = '你是一位精通美国加州家庭法的AI法律顾问。';
+      else if(j==='europe') ctx = '你是一位精通欧洲人权公约的AI法律顾问。';
+      else if(j==='custom') ctx = document.getElementById('customLawContext').value.trim() || ctx;
+      const prompt = `${ctx} 请分析以下协议条款，用中文给出风险提示和合规建议。`;
       try {
-        const resp = await fetch("https://api.deepseek.com/chat/completions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-          body: JSON.stringify({ model: "deepseek-chat", messages: [{ role: "system", content: systemPrompt }, { role: "user", content: contractText }], temperature: 0.3, max_tokens: 1024 })
+        const resp = await fetch('https://api.deepseek.com/chat/completions', {
+          method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+          body: JSON.stringify({model:'deepseek-chat', messages:[{role:'system',content:prompt},{role:'user',content:text}], temperature:0.3, max_tokens:1024})
         });
-        if (!resp.ok) throw new Error(`API 请求失败 (${resp.status})`);
+        if(!resp.ok) throw new Error(`API ${resp.status}`);
         const data = await resp.json();
-        const reply = data.choices[0].message.content;
-        resultDiv.innerHTML = `<div class="ai-response"><strong>📋 法律风险分析：</strong><br><br>${reply.replace(/\n/g, '<br>')}</div>`;
-      } catch(e) { resultDiv.innerHTML = `<p style="color:red">❌ 分析失败: ${e.message}</p>`; }
+        resDiv.innerHTML = `<div class="ai-response">📋 ${data.choices[0].message.content.replace(/\n/g, '<br>')}</div>`;
+      } catch(e) { resDiv.innerHTML = `❌ ${e.message}`; }
     });
     document.getElementById('lawJurisdiction').addEventListener('change', function() {
-      document.getElementById('customLawBox').style.display = this.value === 'custom' ? 'block' : 'none';
+      document.getElementById('customLawBox').style.display = this.value==='custom' ? 'block' : 'none';
     });
 
     init();
