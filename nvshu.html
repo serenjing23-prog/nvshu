@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script>
+// Buffer polyfill
+if (typeof Buffer === 'undefined') {
+  class Buffer {
+    static from(data, encoding) {
+      if (typeof data === 'string') {
+        return new TextEncoder().encode(data);
+      }
+      if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
+        return new Uint8Array(data);
+      }
+      return new Uint8Array(data);
+    }
+  }
+  window.Buffer = Buffer;
+}
+</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>女书 · “婚姻”即议定协议 | 链上合约工具</title>
